@@ -1,9 +1,9 @@
 package com.p.e;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AlertDialog;
-import androidx.appcompat.app.AppCompatActivity;
 
-import android.content.Context;
+import android.content.res.Configuration;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,36 +11,43 @@ import android.widget.TextView;
 
 public class MainActivity extends BaseActivity {
 
+    private AlertDialog alertDialog;
+    private TextView displayText;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        
-        showCustomAlertDialog("Lorem Ipsum is simply dummy text of the printing and typesetting industry.");
+
+
+//        CustomDialog customDialog = new CustomDialog(this);
+//        customDialog.setTitle();
+//        customDialog.show();
+        showCustomAlertDialog();
     }
 
 
-    private void showCustomAlertDialog(String message) {
-        // Create an AlertDialog builder
-        AlertDialog.Builder dialogBuilder = new AlertDialog.Builder(this);
-
-        // Get the LayoutInflater
-        LayoutInflater inflater = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-
-        // Inflate the custom layout
+    private void showCustomAlertDialog() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(this);
+        LayoutInflater inflater = getLayoutInflater();
         View dialogView = inflater.inflate(R.layout.custom_alert_dialog, null);
+        builder.setView(dialogView);
+        AlertDialog alertDialog = builder.create();
+        int widthInPixels = 500; // You can set your desired width
+        int heightInPixels = 300; // You can set your desired height
+        alertDialog.getWindow().setLayout(widthInPixels, heightInPixels); // You can set your desired width and height
 
-        // Get the TextView in the custom layout
-        TextView dialogText = dialogView.findViewById(R.id.dialog_text);
-
-        // Set the message
-        dialogText.setText(message);
-
-        // Set the inflated view to the builder
-        dialogBuilder.setView(dialogView);
-
-        // Create and show the dialog
-        AlertDialog alertDialog = dialogBuilder.create();
         alertDialog.show();
+
+    }
+
+    @Override
+    public void onConfigurationChanged(@NonNull Configuration newConfig) {
+        super.onConfigurationChanged(newConfig);
+        // Handle the configuration change if needed
+        // For example, you might reposition the dialog
+        if (alertDialog != null && alertDialog.isShowing()) {
+            alertDialog.dismiss();
+            alertDialog.show();
+        }
     }
 }

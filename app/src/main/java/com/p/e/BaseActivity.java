@@ -14,6 +14,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.RequiresApi;
 import androidx.appcompat.app.AppCompatActivity;
 
+
 public class BaseActivity extends AppCompatActivity {
 
     private static final int[] ORDERED_DENSITY_DP = {
@@ -38,26 +39,23 @@ public class BaseActivity extends AppCompatActivity {
             DisplayMetrics.DENSITY_XXXHIGH,
     };
 
-
     @Override
     protected void attachBaseContext(final Context baseContext) {
-
         Context newContext = baseContext;
 
         // Screen zoom is supported from API 24+
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
-
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
             Resources resources = baseContext.getResources();
             DisplayMetrics displayMetrics = resources.getDisplayMetrics();
             Configuration configuration = resources.getConfiguration();
 
-
             if (displayMetrics.densityDpi != DisplayMetrics.DENSITY_DEVICE_STABLE) {
-                if(Settings.Global.getString(baseContext.getContentResolver(), "display_size_forced") != null) {
+                if (isDisplaySizeForced(baseContext)) {
                     float defaultDensity = (DisplayMetrics.DENSITY_DEVICE_STABLE / (float) DisplayMetrics.DENSITY_DEFAULT);
                     float defaultScreenWidthDp = displayMetrics.widthPixels / defaultDensity;
                     configuration.densityDpi = findDensityDpCanFitScreen((int) defaultScreenWidthDp);
                 } else {
+                    // Use device default density
                     configuration.densityDpi = DisplayMetrics.DENSITY_DEVICE_STABLE;
                 }
                 configuration.fontScale = 1.0f;
@@ -66,6 +64,13 @@ public class BaseActivity extends AppCompatActivity {
 
         }
         super.attachBaseContext(newContext);
+    }
+
+    @TargetApi(Build.VERSION_CODES.N)
+    private boolean isDisplaySizeForced(Context context) {
+        // Check if display size is forced
+        String displaySizeForced = Settings.Global.getString(context.getContentResolver(), "display_size_forced");
+        return displaySizeForced != null && !displaySizeForced.isEmpty();
     }
 
     @TargetApi(Build.VERSION_CODES.N)
@@ -78,4 +83,3 @@ public class BaseActivity extends AppCompatActivity {
         return orderedDensityDp[index];
     }
 }
-
